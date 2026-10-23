@@ -68,7 +68,7 @@ The official Konami transfer tool executes its native girlfriend data LZ77 decom
    > **『ラブプラス＋』のDSゲームカードを確認しました。引継ぎを行いますか？**  
    > *(LovePlus+ DS game card confirmed. Proceed with transfer?)*
 7. Tap **【はい】** (Yes) on the touchscreen to copy data.
-8. Once complete, launch 《NEWラブプラス＋》（*NEW LovePlus+*）—your girlfriend's data, affection, anniversary dates, and memories are seamlessly carried over!
+8. Once transfer is complete, launch **《NEWラブプラス＋》** (*NEW LovePlus+*), select **『ラブプラス』『ラブプラス＋』のデータを引き継ぐ** (*Inherit save data from "LovePlus" / "LovePlus+"*) on the title menu, and wait for the progress bar to finish—your girlfriend's data, affection, anniversary dates, and memories are seamlessly carried over!
 
 ---
 

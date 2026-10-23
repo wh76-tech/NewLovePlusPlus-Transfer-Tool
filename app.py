@@ -70,19 +70,19 @@ I18N = {
             "【接下来只需 3 步】：\n"
             "1. 打开模拟器，运行《NEWラブプラス＋セーブデータ引継ぎツール》（引继工具）。\n"
             "2. 屏幕将显示：『ラブプラス＋』のDSゲームカードを確認しました。\n"
-            "   点击【はい】确认复制数据。\n"
-            "3. 提示引继完成后，打开《NEW LovePlus+》本体，女友数据已完美继承！"
+            "   点击【はい】确认复制数据，等待提示引继成功。\n"
+            "3. 打开《NEW LovePlus+》（新爱相随+）本体，在标题菜单点击「继承《爱相随》《爱相随+》的存档」（『ラブプラス』『ラブプラス＋』のデータを引き継ぐ），等待进度条跑完，女友数据即完美继承！"
         ),
-        'deploy_msg': "《LovePlus+》存档与补丁已成功注入模拟器！\n\n现在请打开模拟器运行《引继工具》，点击【はい】即可完成继承！",
+        'deploy_msg': "《LovePlus+》存档与补丁已成功注入模拟器！\n\n1. 运行《引继工具》，点击【はい】完成数据复制。\n2. 打开《NEW LovePlus+》本体，在标题菜单点击「继承《爱相随》《爱相随+》的存档」并等待进度条跑完即可！",
         'deploy_msg_title': "部署完成",
         'sd_success_header': "\n================ 实机配置完成！ ================",
         'sd_steps': (
             "【实机操作指引】：\n"
-            "1. 将 SD 卡插回 3DS 主机，开机确保 Luma 菜单启用了 'Enable game patching'。\n"
-            "2. 运行《NEWラブプラス＋セーブデータ引継ぎツール》。\n"
-            "3. 确认复制数据，引继完成后打开《NEW LovePlus+》即可！"
+            "1. 将 SD 卡插回 3DS 主机，开机长按 Select 确保 Luma 菜单启用了 'Enable game patching'。\n"
+            "2. 运行《NEWラブプラス＋セーブデータ引継ぎツール》，确认复制数据。\n"
+            "3. 打开《NEW LovePlus+》本体，在标题菜单点击「继承《爱相随》《爱相随+》的存档」（『ラブプラス』『ラブプラス＋』のデータを引き継ぐ），等待进度条跑完即可！"
         ),
-        'sd_msg': "SD 卡补丁与存档已就绪！\n\n插回 3DS 运行引继工具即可完成转换。",
+        'sd_msg': "SD 卡补丁与存档已就绪！\n\n插回 3DS 运行引继工具完成复制后，在《NEW LovePlus+》本体标题菜单点击「继承《爱相随》《爱相随+》的存档」并等待进度条跑完即可。",
         'sd_msg_title': "实机配置完成",
         'zip_created_log': "[✓] 独立分享包已生成: {path}",
         'zip_desc_log': "压缩包内已包含纯净 256KB 存档、免卡带补丁及全平台使用教程，可直接分享给好友！",
@@ -138,18 +138,18 @@ I18N = {
             "1. Launch your emulator and open 'NEW LovePlus+ Save Data Transfer Tool'.\n"
             "2. The screen will display: 『ラブプラス＋』のDSゲームカードを確認しました。\n"
             "   Click [はい] (Yes) to confirm copying data.\n"
-            "3. Once transfer is complete, open 'NEW LovePlus+' game; girlfriend data is now seamlessly carried over!"
+            "3. Launch 'NEW LovePlus+' game, select 'Inherit save from LovePlus / LovePlus+' (『ラブプラス』『ラブプラス＋』のデータを引き継ぐ) on the title menu, and wait for the progress bar to finish. Your girlfriend data is now seamlessly carried over!"
         ),
-        'deploy_msg': "LovePlus+ save and bypass patch successfully injected into the emulator!\n\nNow open the emulator, run the Transfer Tool, and tap [はい] to complete transfer!",
+        'deploy_msg': "LovePlus+ save and bypass patch successfully injected into the emulator!\n\n1. Run the Transfer Tool and tap [はい] to copy data.\n2. Open 'NEW LovePlus+', select 'Inherit save from LovePlus / LovePlus+' on the title menu, and wait for the progress bar to finish!",
         'deploy_msg_title': "Deployment Complete",
         'sd_success_header': "\n================ SD Card Setup Complete! ================",
         'sd_steps': (
             "[Real 3DS Console Guide]:\n"
             "1. Insert the SD card back into your 3DS. Hold Select on boot to ensure 'Enable game patching' is checked in Luma3DS.\n"
-            "2. Launch 'NEW LovePlus+ Save Data Transfer Tool' on your 3DS.\n"
-            "3. Confirm copying data. Then launch 'NEW LovePlus+' game to play!"
+            "2. Launch 'NEW LovePlus+ Save Data Transfer Tool' on your 3DS and confirm copying data.\n"
+            "3. Launch 'NEW LovePlus+' game, select 'Inherit save from LovePlus / LovePlus+' (『ラブプラス』『ラブプラス＋』のデータを引き継ぐ) on the title menu, and wait for the progress bar to finish!"
         ),
-        'sd_msg': "SD card patch and save are ready!\n\nInsert back into 3DS and launch the Transfer Tool to complete transfer.",
+        'sd_msg': "SD card patch and save are ready!\n\nInsert back into 3DS, run Transfer Tool to copy, then select 'Inherit save from LovePlus / LovePlus+' on the main game title menu and wait for the progress bar to finish.",
         'sd_msg_title': "Setup Complete",
         'zip_created_log': "[✓] Standalone share pack generated: {path}",
         'zip_desc_log': "Zip archive contains calibrated 256KB save, Slot-1 bypass patch, and multi-platform tutorials!",
@@ -570,14 +570,16 @@ class App(tk.Tk):
                     "2. Copy 'code.ips' to 'load/mods/0004000000120D00/code.ips' (no exefs folder required, exefs/ is also supported).\n"
                     "3. Open the emulator and launch 'NEW LovePlus+ Save Data Transfer Tool'.\n"
                     "4. Tap [はい] (Yes) to confirm transfer.\n"
-                    "5. Launch 'NEW LovePlus+' game to play!\n\n"
+                    "5. Launch 'NEW LovePlus+' game, select 'Inherit save from LovePlus / LovePlus+' (『ラブプラス』『ラブプラス＋』のデータを引き継ぐ) on the title menu, and wait for the progress bar to finish!\n\n"
                     "[2. Real 3DS (Luma3DS)]:\n"
                     "1. Place 'lpp.sav' at the root of your SD card (SD:/lpp.sav).\n"
                     "2. Place 'code.ips' at 'SD:/luma/titles/0004000000120D00/code.ips'.\n"
-                    "3. Launch the Transfer Tool on 3DS to copy data.\n\n"
+                    "3. Launch the Transfer Tool on 3DS to copy data.\n"
+                    "4. Launch 'NEW LovePlus+' game, select 'Inherit save from LovePlus / LovePlus+' on the title menu, and wait for the progress bar to finish!\n\n"
                     "[3. Android Mobile Citra / Lime3DS]:\n"
                     "1. Place save at: /citra-emu/sdmc/lpp.sav\n"
                     "2. Place patch at: /citra-emu/load/mods/0004000000120D00/code.ips\n"
+                    "3. Run Transfer Tool -> then in 'NEW LovePlus+' select 'Inherit save' on title menu and wait for progress bar.\n"
                 )
 
                 with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zf:
