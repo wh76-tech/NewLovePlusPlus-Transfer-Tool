@@ -44,8 +44,9 @@ I18N = {
         'zip_path_label': "保存压缩包路径:",
         'btn_deploy': "🚀 一键部署 / 导出",
         'grp_log': " 执行日志与操作指引 ",
-        'welcome_1': "欢迎使用《NEW LovePlus+ 存档引继助手》！",
+        'welcome_1': "欢迎使用《NEW LovePlus+ 存档引继助手》！ (by wh76-tech & Google Antigravity)",
         'welcome_2': "请先选择您的 DraStic (.dsv) 或 NDS (.sav) 存档，然后点击【一键部署】。",
+        'footer': "Crafted with ❤️ by wh76-tech & Google Antigravity | MIT License",
         'sel_file_title': "选择 LovePlus+ 存档文件",
         'all_files': "所有文件",
         'dsv_recognized': "识别结果: DraStic DSV 存档 ({sz:,} 字节，含 122 字节尾部，部署时将自动截取前 256KB)",
@@ -110,8 +111,9 @@ I18N = {
         'zip_path_label': "Save Zip File Path:",
         'btn_deploy': "🚀 Deploy / Export Now",
         'grp_log': " Execution Log & Step-by-Step Guide ",
-        'welcome_1': "Welcome to NEW LovePlus+ Save Transfer Tool!",
+        'welcome_1': "Welcome to NEW LovePlus+ Save Transfer Tool! (by wh76-tech & Google Antigravity)",
         'welcome_2': "Please select your DraStic (.dsv) or NDS (.sav) save, then click [Deploy / Export Now].",
+        'footer': "Crafted with ❤️ by wh76-tech & Google Antigravity | MIT License",
         'sel_file_title': "Select LovePlus+ Save File",
         'all_files': "All Files",
         'dsv_recognized': "Recognized: DraStic DSV Save ({sz:,} bytes, 122-byte DeSmuME footer will be stripped on deploy)",
@@ -350,6 +352,10 @@ class App(tk.Tk):
         self.log(self.t('welcome_2'))
         self.log("------------------------------------------------------------------")
 
+        # Footer / Credits
+        self.lbl_footer = ttk.Label(container, text=self.t('footer'), font=("Microsoft YaHei UI", 8), foreground="#888888")
+        self.lbl_footer.pack(side='bottom', pady=(0, 4))
+
         # Auto-detect default save file if present in current dir
         cur_dsv = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'lpp.dsv')
         cur_sav = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'lpp.sav')
@@ -377,6 +383,7 @@ class App(tk.Tk):
         self.btn_browse_custom.config(text=self.t('browse'))
         self.btn_run.config(text=self.t('btn_deploy'))
         self.grp_log.config(text=self.t('grp_log'))
+        self.lbl_footer.config(text=self.t('footer'))
 
         # Update mode label
         self.on_mode_change()

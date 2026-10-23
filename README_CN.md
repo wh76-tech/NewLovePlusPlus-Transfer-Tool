@@ -125,6 +125,15 @@ pyinstaller --onefile --noconsole --name "NEW_LovePlus+_Transfer_Tool" --icon="a
 
 ---
 
+## 💖 鸣谢与致谢 (Credits)
+
+- **[wh76-tech](https://github.com/wh76-tech)** - 项目发起者、测试与维护。
+- **[Google Antigravity](https://deepmind.google/)** - 协助完成 ARM11 逆向工程分析、代码洞（Code Cave）底层补丁编写与桌面工具开发。
+- **[Konami Digital Entertainment](https://www.konami.com/)** - 《LovePlus+》与《NEW LovePlus+》原作制作方。
+- **3DS 模拟器与自制系统社区**（Citra、Azahar、Lime3DS 及 Luma3DS 团队）- 提供出色的运行与补丁平台。
+
+---
+
 ## 📄 开源许可证
 
 本项目基于 [MIT License](LICENSE) 开源。

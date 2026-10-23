@@ -128,6 +128,15 @@ pyinstaller --onefile --noconsole --name "NEW_LovePlus+_Transfer_Tool" --icon="a
 
 ---
 
+## 💖 Acknowledgments & Credits
+
+- **[wh76-tech](https://github.com/wh76-tech)** - Project author, testing, and maintenance.
+- **[Google Antigravity](https://deepmind.google/)** - AI pair programmer for ARM11 binary reverse engineering, Code Cave hot-patching, and application development.
+- **[Konami Digital Entertainment](https://www.konami.com/)** - Original creator of *LovePlus+* and *NEW LovePlus+*.
+- **3DS Emulation & Homebrew Community** (Citra, Azahar, Lime3DS, and Luma3DS teams) - For providing incredible emulation and custom firmware platforms.
+
+---
+
 ## 📄 License
 
 This project is licensed under the [MIT License](LICENSE).
