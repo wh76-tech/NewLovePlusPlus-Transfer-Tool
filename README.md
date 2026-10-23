@@ -47,7 +47,7 @@ The official Konami transfer tool executes its native girlfriend data LZ77 decom
   - Calibrates any flashcart save to the standard 256KB (`0x40000`) EEPROM format.
 - 🚀 **One-Click Emulator Auto-Injection**:
   - Automatically locates **Azahar**, **Citra**, **Lime3DS**, and **Mandarine** user data directories.
-  - Automatically deploys the LayeredFS patch (`load/mods/0004000000120D00/exefs/code.ips`) and SDMC save file (`sdmc/lpp.sav`).
+  - Automatically deploys the LayeredFS patch (`load/mods/0004000000120D00/code.ips`) and SDMC save file (`sdmc/lpp.sav`).
 - 🎮 **Real 3DS & Multi-Platform Support**:
   - Automatically formats and writes Luma3DS LayeredFS patches to real 3DS SD cards.
   - Exports an all-in-one portable `.zip` package for Android Citra / Lime3DS users.
@@ -62,7 +62,7 @@ The official Konami transfer tool executes its native girlfriend data LZ77 decom
 2. **Step 1**: Click **Browse...** to select your *LovePlus+* save file (supports DraStic `lpp.dsv` or any `.sav`).
 3. **Step 2**: Choose your deployment target (automatically detects your installed Azahar / Citra emulator).
 4. Click **【🚀 Deploy / Export Now】**.
-   > 💡 **What happens automatically**: The tool injects the `code.ips` patch directly into the emulator's mod directory (`load/mods/0004000000120D00/exefs/code.ips`) and writes your calibrated save to `sdmc/lpp.sav`. No manual file copying is needed!
+   > 💡 **What happens automatically**: The tool injects the `code.ips` patch directly into the emulator's mod directory (`load/mods/0004000000120D00/code.ips`) and writes your calibrated save to `sdmc/lpp.sav`. No manual file copying or folder creation needed!
 5. Launch your 3DS emulator and open **《NEWラブプラス＋セーブデータ引継ぎツール》** (*Transfer Tool*).
 6. The on-screen prompt will confirm:
    > **『ラブプラス＋』のDSゲームカードを確認しました。引継ぎを行いますか？**  
@@ -78,14 +78,15 @@ If you prefer placing files manually:
 
 #### 1. PC Emulators (Azahar / Citra / Lime3DS)
 - **Save file**: Rename your 256KB save to `lpp.sav` and place it in `<Emulator_Data_Dir>/sdmc/lpp.sav`.
-- **Patch file**: Copy `code.ips` to:
+- **Patch file**: Copy `code.ips` directly into the Title ID mod folder (no `exefs` subfolder required, matching Luma3DS standard; placing inside `exefs/` is also supported):
   ```text
-  <Emulator_Data_Dir>/load/mods/0004000000120D00/exefs/code.ips
+  <Emulator_Data_Dir>/load/mods/0004000000120D00/code.ips
   ```
+  *(or `<Emulator_Data_Dir>/load/mods/0004000000120D00/exefs/code.ips`)*
 
 #### 2. Real 3DS Hardware (Luma3DS Custom Firmware)
 - **Save file**: Place the 256KB save at the **root of your 3DS SD card** as `SD:/lpp.sav`.
-- **Patch file**: Copy `code.ips` to:
+- **Patch file**: Copy `code.ips` directly to:
   ```text
   SD:/luma/titles/0004000000120D00/code.ips
   ```
@@ -93,7 +94,7 @@ If you prefer placing files manually:
 
 #### 3. Android Emulators (Citra / Lime3DS Mobile)
 - **Save path**: `/citra-emu/sdmc/lpp.sav`
-- **Patch path**: `/citra-emu/load/mods/0004000000120D00/exefs/code.ips`
+- **Patch path**: `/citra-emu/load/mods/0004000000120D00/code.ips` (or `/citra-emu/load/mods/0004000000120D00/exefs/code.ips`)
 
 ---
 

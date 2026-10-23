@@ -26,6 +26,6 @@ NEW LovePlus+ 存档引继助手 (全平台免卡带版)
 二、手动部署方式：
    - 存档文件：命名为 `lpp.sav`，放置在模拟器数据目录下的 `sdmc/lpp.sav`（实机放 SD 卡根目录）。
    - 补丁文件：
-     - 模拟器：将 `patch/code.ips` 和 `patch/code.bin` 放到 `load/mods/0004000000120D00/exefs/` 下。
+     - 模拟器：直接将 patch/code.ips 放到 load/mods/0004000000120D00/code.ips（无需创建 exefs 子文件夹，亦可放入 exefs/ 目录）。
      - 3DS 实机（Luma3DS）：将 `patch/code.ips` 放到 `SD:/luma/titles/0004000000120D00/code.ips`。
 ========================================================================

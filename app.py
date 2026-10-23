@@ -504,20 +504,27 @@ class App(tk.Tk):
                     f.write(save_bytes)
                 self.log(self.t('save_written_log', path=target_sav, sz=len(save_bytes)))
 
-                # 2. Write mods
-                mod_dir = os.path.join(emu_dir, 'load', 'mods', TITLE_ID, 'exefs')
-                os.makedirs(mod_dir, exist_ok=True)
+                # 2. Write mods (write to both mod root and exefs subfolder for 100% fail-safe compatibility)
+                mod_title_dir = os.path.join(emu_dir, 'load', 'mods', TITLE_ID)
+                mod_exefs_dir = os.path.join(mod_title_dir, 'exefs')
+                os.makedirs(mod_exefs_dir, exist_ok=True)
 
-                target_ips = os.path.join(mod_dir, 'code.ips')
-                with open(target_ips, 'wb') as f:
+                target_ips_root = os.path.join(mod_title_dir, 'code.ips')
+                target_ips_exefs = os.path.join(mod_exefs_dir, 'code.ips')
+                with open(target_ips_root, 'wb') as f:
                     f.write(EMBEDDED_CODE_IPS)
-                self.log(self.t('ips_written_log', path=target_ips))
+                with open(target_ips_exefs, 'wb') as f:
+                    f.write(EMBEDDED_CODE_IPS)
+                self.log(self.t('ips_written_log', path=target_ips_root))
 
                 if patched_code_bin:
-                    target_bin = os.path.join(mod_dir, 'code.bin')
-                    with open(target_bin, 'wb') as f:
+                    target_bin_root = os.path.join(mod_title_dir, 'code.bin')
+                    target_bin_exefs = os.path.join(mod_exefs_dir, 'code.bin')
+                    with open(target_bin_root, 'wb') as f:
                         f.write(patched_code_bin)
-                    self.log(self.t('bin_written_log', path=target_bin))
+                    with open(target_bin_exefs, 'wb') as f:
+                        f.write(patched_code_bin)
+                    self.log(self.t('bin_written_log', path=target_bin_root))
 
                 self.log(self.t('deploy_success_header'))
                 self.log(self.t('deploy_steps'))
@@ -560,7 +567,7 @@ class App(tk.Tk):
                     "========================================================================\n\n"
                     "[1. PC Emulators (Azahar / Citra / Lime3DS)]:\n"
                     "1. Copy 'lpp.sav' to your emulator's 'sdmc/' directory (as sdmc/lpp.sav).\n"
-                    "2. Copy 'code.ips' and 'code.bin' to 'load/mods/0004000000120D00/exefs/'.\n"
+                    "2. Copy 'code.ips' to 'load/mods/0004000000120D00/code.ips' (no exefs folder required, exefs/ is also supported).\n"
                     "3. Open the emulator and launch 'NEW LovePlus+ Save Data Transfer Tool'.\n"
                     "4. Tap [はい] (Yes) to confirm transfer.\n"
                     "5. Launch 'NEW LovePlus+' game to play!\n\n"
@@ -570,7 +577,7 @@ class App(tk.Tk):
                     "3. Launch the Transfer Tool on 3DS to copy data.\n\n"
                     "[3. Android Mobile Citra / Lime3DS]:\n"
                     "1. Place save at: /citra-emu/sdmc/lpp.sav\n"
-                    "2. Place patch at: /citra-emu/load/mods/0004000000120D00/exefs/code.ips\n"
+                    "2. Place patch at: /citra-emu/load/mods/0004000000120D00/code.ips\n"
                 )
 
                 with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zf:

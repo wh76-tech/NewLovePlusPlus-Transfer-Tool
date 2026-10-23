@@ -45,7 +45,7 @@
   - 自动将各类烧录卡导出的存档校准为标准的 256KB（`0x40000`）格式。
 - 🚀 **一键部署到模拟器**：
   - 自动探测本机已安装的 **Azahar**、**Citra**、**Lime3DS**、**Mandarine** 模拟器数据路径。
-  - 自动创建 LayeredFS 补丁目录（`load/mods/0004000000120D00/exefs/`）与 SDMC 存档文件。
+  - 自动创建 LayeredFS 补丁目录（`load/mods/0004000000120D00/code.ips`）与 SDMC 存档文件。
 - 🎮 **实机与多端支持**：
   - 支持直接将补丁与存档一键写入真实 3DS 的 SD 卡（兼容 Luma3DS LayeredFS）。
   - 支持导出免安装独立 `.zip` 压缩包，方便发送给手机 Citra / Lime3DS 用户。
@@ -60,7 +60,7 @@
 2. **第一步**：点击“浏览文件”选择您的《LovePlus+》存档文件（支持 DraStic 的 `lpp.dsv` 或任意 `.sav`）。
 3. **第二步**：选择目标环境（默认会自动选中已检测到的 Azahar / Citra 模拟器）。
 4. 点击 **【🚀 一键部署 / 导出】** 按钮。
-   > 💡 **程序自动执行**：工具会自动将 `code.ips` 免卡带补丁写入模拟器的 mods 目录（`load/mods/0004000000120D00/exefs/code.ips`），并将校准后的存档写入 `sdmc/lpp.sav`，无需手动复制文件！
+   > 💡 **程序自动执行**：工具会自动将 `code.ips` 免卡带补丁写入模拟器的 mods 目录（`load/mods/0004000000120D00/code.ips`），并将校准后的存档写入 `sdmc/lpp.sav`，无需手动复制文件或新建文件夹！
 5. 打开模拟器运行《NEWラブプラス＋セーブデータ引継ぎツール》（引继工具）。
 6. 屏幕将显示：
    > **『ラブプラス＋』のDSゲームカードを確認しました。引継ぎを行いますか？**
@@ -75,14 +75,15 @@
 
 #### 1. 电脑模拟器（Azahar / Citra / Lime3DS）
 - **存档路径**：将提取出的 256KB 存档重命名为 `lpp.sav`，放置在模拟器数据目录下的 `sdmc/lpp.sav`。
-- **补丁路径**：将 `code.ips` 放置在：
+- **补丁路径**：将 `code.ips` 直接放入游戏 Title ID 文件夹即可（无需新建 `exefs` 子文件夹，与真实 3DS 实机保持统一；放入 `exefs/` 亦兼容）：
   ```text
-  <模拟器目录>/load/mods/0004000000120D00/exefs/code.ips
+  <模拟器数据目录>/load/mods/0004000000120D00/code.ips
   ```
+  *(或 `<模拟器数据目录>/load/mods/0004000000120D00/exefs/code.ips`)*
 
 #### 2. 真实 3DS 主机（Luma3DS）
 - **存档路径**：将 256KB 存档命名为 `lpp.sav`，放置在 3DS 的 **SD 卡根目录**（`SD:/lpp.sav`）。
-- **补丁路径**：将 `code.ips` 放置在：
+- **补丁路径**：将 `code.ips` 放到：
   ```text
   SD:/luma/titles/0004000000120D00/code.ips
   ```
@@ -90,7 +91,7 @@
 
 #### 3. 手机模拟器（Android Citra / Lime3DS）
 - **存档路径**：`/citra-emu/sdmc/lpp.sav`
-- **补丁路径**：`/citra-emu/load/mods/0004000000120D00/exefs/code.ips`
+- **补丁路径**：`/citra-emu/load/mods/0004000000120D00/code.ips` (或 `/citra-emu/load/mods/0004000000120D00/exefs/code.ips`)
 
 ---
 
