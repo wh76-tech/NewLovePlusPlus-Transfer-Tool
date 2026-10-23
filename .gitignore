@@ -3,10 +3,11 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-# PyInstaller / Build Artifacts
+# Build & Archives
 build/
 dist/
 *.spec
+*.zip
 
 # Game Dumps, ROMs, Proprietary Binaries & Extracted Files (Do not commit copyright data)
 *.cci
