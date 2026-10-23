@@ -1,0 +1,33 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# PyInstaller / Build Artifacts
+build/
+dist/
+*.spec
+
+# Game Dumps, ROMs, Proprietary Binaries & Extracted Files (Do not commit copyright data)
+*.cci
+*.3ds
+*.cia
+*.bin
+exefs/
+romfs/
+romfs_extracted/
+load/
+
+# Personal Saves & Temporary data
+*.dsv
+*.sav
+test_patches.py
+
+# Third-party tools
+ctrtool.exe
+
+# OS / Editor
+.vscode/
+.idea/
+Thumbs.db
+Desktop.ini
