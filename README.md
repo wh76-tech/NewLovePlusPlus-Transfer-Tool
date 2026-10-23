@@ -62,6 +62,7 @@ The official Konami transfer tool executes its native girlfriend data LZ77 decom
 2. **Step 1**: Click **Browse...** to select your *LovePlus+* save file (supports DraStic `lpp.dsv` or any `.sav`).
 3. **Step 2**: Choose your deployment target (automatically detects your installed Azahar / Citra emulator).
 4. Click **【🚀 Deploy / Export Now】**.
+   > 💡 **What happens automatically**: The tool injects the `code.ips` patch directly into the emulator's mod directory (`load/mods/0004000000120D00/exefs/code.ips`) and writes your calibrated save to `sdmc/lpp.sav`. No manual file copying is needed!
 5. Launch your 3DS emulator and open **《NEWラブプラス＋セーブデータ引継ぎツール》** (*Transfer Tool*).
 6. The on-screen prompt will confirm:
    > **『ラブプラス＋』のDSゲームカードを確認しました。引継ぎを行いますか？**  
