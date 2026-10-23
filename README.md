@@ -1,5 +1,7 @@
 # New LovePlus+ Save Transfer Tool (NEWラブプラス＋ 存档引继助手)
 
+[ [English](README_EN.md) | [中文说明](README.md) ]
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%203DS%20%7C%20Citra%20%7C%20Azahar-green.svg)]()
 [![Python](https://img.shields.io/badge/Python-3.9%2B-orange.svg)]()
