@@ -28,6 +28,11 @@ I18N = {
         'step1_title': " 第一步：选择 NDS 存档文件 (.dsv / .sav) ",
         'browse': "浏览文件...",
         'tip_default': "提示：支持选择《LovePlus》（初代 64KB）或《LovePlus+》（256KB）存档，程序将自动识别版本并校准。",
+        'grp_version': " 游戏版本选择 / 目标存档格式 ",
+        'ver_lpp': "《LovePlus+》（爱相随+） -> 部署为 lpp.sav (256KB)",
+        'ver_lp': "《LovePlus》（初代爱相随） -> 部署为 lp.sav (64KB)",
+        'ver_tip': "💡 提示：选择存档后会自动匹配推荐版本，您也可在此根据需要自由切换。",
+        'conflict_removed_log': "[*] 已清理旧的冲突文件: {path}",
         'step2_title': " 第二步：选择目标部署环境 ",
         'mode_emu': "本机 3DS 模拟器 (自动探测与注入)",
         'mode_sd': "真实 3DS 主机 SD 卡 (自动创建 Luma 补丁目录与 sdmc 存档)",
@@ -97,6 +102,11 @@ I18N = {
         'step1_title': " Step 1: Select NDS Save File (.dsv / .sav) ",
         'browse': "Browse...",
         'tip_default': "Note: Supports 'LovePlus' (64KB) or 'LovePlus+' (256KB) saves. The tool auto-detects version & calibrates.",
+        'grp_version': " Target Game Version & Save Format ",
+        'ver_lpp': "'LovePlus+' -> Deploy as lpp.sav (256KB)",
+        'ver_lp': "'LovePlus' (1st Gen) -> Deploy as lp.sav (64KB)",
+        'ver_tip': "💡 Note: Auto-selected based on save size, but you can freely switch version here.",
+        'conflict_removed_log': "[*] Removed conflicting old save file: {path}",
         'step2_title': " Step 2: Select Deployment Target ",
         'mode_emu': "Local 3DS Emulator (Auto-detect & Inject)",
         'mode_sd': "Real 3DS SD Card (Auto-create Luma patch directory & sdmc save)",
@@ -205,8 +215,8 @@ class App(tk.Tk):
         super().__init__()
         self.lang = get_default_lang()
         self.title(self.t('app_title'))
-        self.geometry("690x630")
-        self.minsize(640, 570)
+        self.geometry("690x680")
+        self.minsize(640, 620)
 
         # Set icon if available
         bundle_dir = get_bundle_dir()
@@ -226,6 +236,7 @@ class App(tk.Tk):
             pass
 
         self.save_file_path = tk.StringVar()
+        self.selected_version = tk.StringVar(value="lpp") # 'lp' or 'lpp'
         self.target_mode = tk.StringVar(value="emulator")
         self.custom_path = tk.StringVar()
         self.selected_emu_idx = tk.IntVar(value=0)
@@ -290,7 +301,23 @@ class App(tk.Tk):
         self.lbl_save_info = ttk.Label(self.grp_save, text=self.t('tip_default'), font=("Microsoft YaHei UI", 8), foreground="#555555")
         self.lbl_save_info.pack(anchor='w', pady=(6, 0))
 
-        # 3. Step 2: Target Selection
+        # 3. Game Version Selection (Manual / Auto)
+        self.grp_version = ttk.LabelFrame(container, text=self.t('grp_version'), padding=(12, 8))
+        self.grp_version.pack(fill='x', pady=(0, 10))
+
+        ver_box = ttk.Frame(self.grp_version)
+        ver_box.pack(fill='x')
+
+        self.r_ver_lpp = ttk.Radiobutton(ver_box, text=self.t('ver_lpp'), variable=self.selected_version, value="lpp", command=self.on_version_changed)
+        self.r_ver_lpp.pack(side='left', padx=(0, 20))
+
+        self.r_ver_lp = ttk.Radiobutton(ver_box, text=self.t('ver_lp'), variable=self.selected_version, value="lp", command=self.on_version_changed)
+        self.r_ver_lp.pack(side='left')
+
+        self.lbl_ver_tip = ttk.Label(self.grp_version, text=self.t('ver_tip'), font=("Microsoft YaHei UI", 8), foreground="#666666")
+        self.lbl_ver_tip.pack(anchor='w', pady=(4, 0))
+
+        # 4. Step 2: Target Selection
         self.grp_target = ttk.LabelFrame(container, text=self.t('step2_title'), padding=(12, 10))
         self.grp_target.pack(fill='x', pady=(0, 10))
 
@@ -329,14 +356,14 @@ class App(tk.Tk):
 
         self.on_mode_change()
 
-        # 4. Action Button
+        # 5. Action Button
         btn_frame = ttk.Frame(container, padding=(0, 4))
         btn_frame.pack(fill='x', pady=(0, 8))
 
         self.btn_run = ttk.Button(btn_frame, text=self.t('btn_deploy'), style='Accent.TButton', command=self.execute_deploy)
         self.btn_run.pack(fill='x', ipady=6)
 
-        # 5. Log & Guidance Console
+        # 6. Log & Guidance Console
         self.grp_log = ttk.LabelFrame(container, text=self.t('grp_log'), padding=(10, 8))
         self.grp_log.pack(fill='both', expand=True, pady=(0, 10))
 
@@ -357,8 +384,14 @@ class App(tk.Tk):
         # Auto-detect default save file if present in current dir
         cur_dsv = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'lpp.dsv')
         cur_sav = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'lpp.sav')
-        if os.path.exists(cur_dsv):
+        cur_lp_dsv = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'lp.dsv')
+        cur_lp_sav = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'lp.sav')
+        if os.path.exists(cur_lp_dsv):
+            self.set_save_file(cur_lp_dsv)
+        elif os.path.exists(cur_dsv):
             self.set_save_file(cur_dsv)
+        elif os.path.exists(cur_lp_sav):
+            self.set_save_file(cur_lp_sav)
         elif os.path.exists(cur_sav):
             self.set_save_file(cur_sav)
 
@@ -367,6 +400,13 @@ class App(tk.Tk):
         self.lang = 'zh' if idx == 0 else 'en'
         self.update_ui_texts()
 
+    def on_version_changed(self):
+        ver = self.selected_version.get()
+        if ver == 'lp':
+            self.log("[*] 用户指定版本:《LovePlus》（初代）-> 目标文件名: lp.sav (64KB)")
+        else:
+            self.log("[*] 用户指定版本:《LovePlus+》（爱相随+）-> 目标文件名: lpp.sav (256KB)")
+
     def update_ui_texts(self):
         self.title(self.t('app_title'))
         self.title_lbl.config(text=self.t('header_title'))
@@ -374,6 +414,10 @@ class App(tk.Tk):
         self.lbl_lang.config(text=self.t('lang_label'))
         self.grp_save.config(text=self.t('step1_title'))
         self.btn_browse_save.config(text=self.t('browse'))
+        self.grp_version.config(text=self.t('grp_version'))
+        self.r_ver_lpp.config(text=self.t('ver_lpp'))
+        self.r_ver_lp.config(text=self.t('ver_lp'))
+        self.lbl_ver_tip.config(text=self.t('ver_tip'))
         self.grp_target.config(text=self.t('step2_title'))
         self.r1.config(text=self.t('mode_emu'))
         self.r2.config(text=self.t('mode_sd'))
@@ -435,15 +479,23 @@ class App(tk.Tk):
 
             if is_dsv:
                 if content_len <= 65536:
+                    self.selected_version.set("lp")
                     info = self.t('lp_dsv_recognized', sz=sz)
                 else:
+                    self.selected_version.set("lpp")
                     info = self.t('lpp_dsv_recognized', sz=sz)
             else:
-                if content_len == 65536:
+                if content_len <= 65536:
+                    self.selected_version.set("lp")
                     info = self.t('lp_std_recognized')
                 elif content_len == 262144:
+                    self.selected_version.set("lpp")
                     info = self.t('lpp_std_recognized')
                 else:
+                    if content_len < 131072:
+                        self.selected_version.set("lp")
+                    else:
+                        self.selected_version.set("lpp")
                     info = self.t('other_recognized', name=os.path.basename(path), sz=sz)
             self.lbl_save_info.config(text=info, foreground="#007700")
         except Exception as e:
@@ -464,7 +516,7 @@ class App(tk.Tk):
             if f:
                 self.custom_path.set(f)
 
-    def process_save_data(self, src_path):
+    def process_save_data(self, src_path, target_version):
         with open(src_path, 'rb') as f:
             data = f.read()
 
@@ -474,16 +526,14 @@ class App(tk.Tk):
             self.log(self.t('dsv_stripped_log'))
 
         # Determine version: LovePlus 1 (64KB / 0x10000) or LovePlus+ (256KB / 0x40000)
-        if len(data) <= 65536:
+        if target_version == 'lp':
             clean_data = data[:65536].ljust(65536, b'\xff')
-            game_type = 'lp'
             self.log(self.t('save_lp_log'))
         else:
             clean_data = data[:262144].ljust(262144, b'\xff')
-            game_type = 'lpp'
             self.log(self.t('save_lpp_log'))
 
-        return clean_data, game_type
+        return clean_data
 
     def execute_deploy(self):
         src = self.save_file_path.get().strip()
@@ -492,10 +542,14 @@ class App(tk.Tk):
             return
 
         mode = self.target_mode.get()
-        self.log(self.t('deploy_start', mode=mode))
+        ver = self.selected_version.get()
+        target_fname = "lp.sav" if ver == "lp" else "lpp.sav"
+        conflict_fname = "lpp.sav" if ver == "lp" else "lp.sav"
+
+        self.log(self.t('deploy_start', mode=f"{mode} | {target_fname}"))
 
         try:
-            save_bytes, game_type = self.process_save_data(src)
+            save_bytes = self.process_save_data(src, ver)
             patched_code_bin = get_patched_code_bin()
 
             if mode == 'emulator':
@@ -506,24 +560,22 @@ class App(tk.Tk):
                 emu_name, emu_dir = self.detected_emus[idx]
                 self.log(self.t('target_emu_log', name=emu_name))
 
-                # 1. Write save to sdmc/
+                # 1. Write sdmc/target_fname & clean up conflict
                 sdmc_dir = os.path.join(emu_dir, 'sdmc')
                 os.makedirs(sdmc_dir, exist_ok=True)
                 
-                if game_type == 'lp':
-                    target_sav_lp = os.path.join(sdmc_dir, 'lp.sav')
-                    target_sav_lpp = os.path.join(sdmc_dir, 'lpp.sav')
-                    with open(target_sav_lp, 'wb') as f:
-                        f.write(save_bytes)
-                    with open(target_sav_lpp, 'wb') as f:
-                        f.write(save_bytes)
-                    self.log(self.t('save_written_log', path=target_sav_lp, sz=len(save_bytes)))
-                    self.log(self.t('save_written_log', path=target_sav_lpp, sz=len(save_bytes)))
-                else:
-                    target_sav_lpp = os.path.join(sdmc_dir, 'lpp.sav')
-                    with open(target_sav_lpp, 'wb') as f:
-                        f.write(save_bytes)
-                    self.log(self.t('save_written_log', path=target_sav_lpp, sz=len(save_bytes)))
+                target_sav = os.path.join(sdmc_dir, target_fname)
+                conflict_sav = os.path.join(sdmc_dir, conflict_fname)
+                if os.path.exists(conflict_sav):
+                    try:
+                        os.remove(conflict_sav)
+                        self.log(self.t('conflict_removed_log', path=conflict_sav))
+                    except Exception:
+                        pass
+
+                with open(target_sav, 'wb') as f:
+                    f.write(save_bytes)
+                self.log(self.t('save_written_log', path=target_sav, sz=len(save_bytes)))
 
                 # 2. Write mods (write to both mod root and exefs subfolder for 100% fail-safe compatibility)
                 mod_title_dir = os.path.join(emu_dir, 'load', 'mods', TITLE_ID)
@@ -558,21 +610,18 @@ class App(tk.Tk):
                     messagebox.showerror(self.t('err_title'), self.t('select_sd_err'))
                     return
 
-                # Write SD save
-                if game_type == 'lp':
-                    target_sav_lp = os.path.join(sd_root, 'lp.sav')
-                    target_sav_lpp = os.path.join(sd_root, 'lpp.sav')
-                    with open(target_sav_lp, 'wb') as f:
-                        f.write(save_bytes)
-                    with open(target_sav_lpp, 'wb') as f:
-                        f.write(save_bytes)
-                    self.log(self.t('save_written_log', path=target_sav_lp, sz=len(save_bytes)))
-                    self.log(self.t('save_written_log', path=target_sav_lpp, sz=len(save_bytes)))
-                else:
-                    target_sav_lpp = os.path.join(sd_root, 'lpp.sav')
-                    with open(target_sav_lpp, 'wb') as f:
-                        f.write(save_bytes)
-                    self.log(self.t('save_written_log', path=target_sav_lpp, sz=len(save_bytes)))
+                target_sav = os.path.join(sd_root, target_fname)
+                conflict_sav = os.path.join(sd_root, conflict_fname)
+                if os.path.exists(conflict_sav):
+                    try:
+                        os.remove(conflict_sav)
+                        self.log(self.t('conflict_removed_log', path=conflict_sav))
+                    except Exception:
+                        pass
+
+                with open(target_sav, 'wb') as f:
+                    f.write(save_bytes)
+                self.log(self.t('save_written_log', path=target_sav, sz=len(save_bytes)))
 
                 # Write Luma3DS LayeredFS patch: SD:/luma/titles/0004000000120D00/code.ips
                 luma_mod_dir = os.path.join(sd_root, 'luma', 'titles', TITLE_ID)
@@ -596,30 +645,26 @@ class App(tk.Tk):
                     "========================================================================\n"
                     "NEW LovePlus+ Save Transfer Pack v1.2 (NEWラブプラス＋ 存档引继补丁包)\n"
                     "========================================================================\n\n"
-                    "Supports both NDS 'LovePlus' (64KB) and 'LovePlus+' (256KB)!\n\n"
+                    f"Selected save format: {target_fname}\n\n"
                     "[1. PC Emulators (Azahar / Citra / Lime3DS)]:\n"
-                    "1. Copy your save to your emulator's 'sdmc/' directory (as sdmc/lpp.sav or sdmc/lp.sav).\n"
+                    f"1. Copy '{target_fname}' to your emulator's 'sdmc/' directory (as sdmc/{target_fname}).\n"
                     "2. Copy 'code.ips' to 'load/mods/0004000000120D00/code.ips' (no exefs folder required, exefs/ is also supported).\n"
                     "3. Open the emulator and launch 'NEW LovePlus+ Save Data Transfer Tool'.\n"
                     "4. Tap [はい] (Yes) to confirm transfer.\n"
                     "5. Launch 'NEW LovePlus+' game, select 'Inherit save from LovePlus / LovePlus+' (『ラブプラス』『ラブプラス＋』のデータを引き継ぐ) on the title menu, and wait for the progress bar to finish!\n\n"
                     "[2. Real 3DS (Luma3DS)]:\n"
-                    "1. Place your save at the root of your SD card (SD:/lpp.sav or SD:/lp.sav).\n"
+                    f"1. Place '{target_fname}' at the root of your SD card (SD:/{target_fname}).\n"
                     "2. Place 'code.ips' at 'SD:/luma/titles/0004000000120D00/code.ips'.\n"
                     "3. Launch the Transfer Tool on 3DS to copy data.\n"
                     "4. Launch 'NEW LovePlus+' game, select 'Inherit save from LovePlus / LovePlus+' on the title menu, and wait for the progress bar to finish!\n\n"
                     "[3. Android Mobile Citra / Lime3DS]:\n"
-                    "1. Place save at: /citra-emu/sdmc/lpp.sav (or /citra-emu/sdmc/lp.sav)\n"
+                    f"1. Place save at: /citra-emu/sdmc/{target_fname}\n"
                     "2. Place patch at: /citra-emu/load/mods/0004000000120D00/code.ips\n"
                     "3. Run Transfer Tool -> then in 'NEW LovePlus+' select 'Inherit save' on title menu and wait for progress bar.\n"
                 )
 
                 with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zf:
-                    if game_type == 'lp':
-                        zf.writestr('lp.sav', save_bytes)
-                        zf.writestr('lpp.sav', save_bytes)
-                    else:
-                        zf.writestr('lpp.sav', save_bytes)
+                    zf.writestr(target_fname, save_bytes)
                     zf.writestr('code.ips', EMBEDDED_CODE_IPS)
                     if patched_code_bin:
                         zf.writestr('code.bin', patched_code_bin)
