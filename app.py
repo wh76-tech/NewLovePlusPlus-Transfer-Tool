@@ -6,20 +6,14 @@ import locale
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 
-# Embedded code.ips data (333 bytes) - Dedicated LovePlus+ Patch
+# Embedded code.ips data (477 bytes) - Universal Dual-Support Patch (LovePlus & LovePlus+)
 EMBEDDED_CODE_IPS = bytes.fromhex(
     '5041544348'
     '1d315c00080100a0e31eff2fe1'
-    '26d0e80038000051e30100a0031eff2f010400a0e30000c1e50100a0e30d00c1e50e00c1e5'
-    '0000a0e3100081e50107a0e3140081e50100a0e31eff2fe1'
+    '26d0e80048000051e30100a0031eff2f012c009fe5002090e50020c1e50100a0e30d00c1e50e00c1e50000a0e3100081e510009fe5002090e5142081e50100a0e31eff2fe1e8623d00ec623d00'
     '26ed5400140400a0e3700084e53f0000ea00f020e300f020e3'
     '27022c0004df9701ea'
-    '2d61b000d470402de930d04de20040a0e10400a0e35000c4e50100a0e35d00c4e55e00c4e5'
-    '0000a0e3600084e50107a0e3640084e5785094e50100a0e300008de50000a0e304008de5'
-    '08008de50300a0e30c008de570008fe210008de50900a0e314008de50100a0e318008de5'
-    '0000a0e31c008de54c009fe520108de20020a0e30930a0e3938cfbeb000050e30b00001a'
-    '20008de224108de20020a0e30030a0e300508de50167a0e304608de59c2afaeb0040a0e1'
-    '20009de5230000ef0400a0e130d08de27080bde8c0a746002f6c70702e73617600000000'
+    '2d61b00154f0402de938d04de20040a0e10100a0e300008de50000a0e304008de508008de50300a0e30c008de50900a0e314008de50100a0e318008de50000a0e31c008de5f8008fe210008de5e4009fe520108de20020a0e30930a0e39d8cfbeb000050e30800000ae0008fe210008de5c0009fe520108de20020a0e30930a0e3948cfbeb000050e32800001a700f1dee800080e20213a0e3011881e3001080e520009de5320000ef700f1dee800080e2082090e50118a0e3010052e1020000da0470a0e30167a0e3010000ea0270a0e30168a0e35070c4e50100a0e35d00c4e55e00c4e50000a0e3600084e5646084e544008fe2007080e540008fe2006080e5785094e520008de224108de20020a0e30030a0e300508de504608de5802afaeb0040a0e120009de5230000ef0400a0e138d08de2f080bde8c0a7460004000000000004002f6c70702e736176000000a02f6c702e73617600'
     '454f46'
 )
 
@@ -27,13 +21,13 @@ TITLE_ID = "0004000000120D00"
 
 I18N = {
     'zh': {
-        'app_title': "NEW LovePlus+ 存档引继与转换助手 v1.1",
+        'app_title': "NEW LovePlus+ 存档引继与转换助手 v1.2",
         'header_title': "NEW LovePlus+ 存档引继助手",
-        'header_sub': "专为 NDS《LovePlus+》打造，支持 DraStic (.dsv) 与标准 (.sav) 存档一键引继",
+        'header_sub': "支持 NDS《爱相随》(初代) 与《爱相随+》全系列存档，完美兼容 DraStic (.dsv) 与标准 (.sav)",
         'lang_label': "🌐 语言 / Language:",
         'step1_title': " 第一步：选择 NDS 存档文件 (.dsv / .sav) ",
         'browse': "浏览文件...",
-        'tip_default': "提示：可直接选择 DraStic 导出的 lpp.dsv，程序将自动剔除 122 字节尾部并校准为标准 256KB 存档。",
+        'tip_default': "提示：支持选择《LovePlus》（初代 64KB）或《LovePlus+》（256KB）存档，程序将自动识别版本并校准。",
         'step2_title': " 第二步：选择目标部署环境 ",
         'mode_emu': "本机 3DS 模拟器 (自动探测与注入)",
         'mode_sd': "真实 3DS 主机 SD 卡 (自动创建 Luma 补丁目录与 sdmc 存档)",
@@ -47,11 +41,13 @@ I18N = {
         'welcome_1': "欢迎使用《NEW LovePlus+ 存档引继助手》！ (by wh76-tech & Google Antigravity)",
         'welcome_2': "请先选择您的 DraStic (.dsv) 或 NDS (.sav) 存档，然后点击【一键部署】。",
         'footer': "Crafted with ❤️ by wh76-tech & Google Antigravity | MIT License",
-        'sel_file_title': "选择 LovePlus+ 存档文件",
+        'sel_file_title': "选择 LovePlus / LovePlus+ 存档文件",
         'all_files': "所有文件",
-        'dsv_recognized': "识别结果: DraStic DSV 存档 ({sz:,} 字节，含 122 字节尾部，部署时将自动截取前 256KB)",
-        'std_recognized': "识别结果: 标准《LovePlus+》存档 (256KB / 0x40000 字节，完美就绪)",
-        'other_recognized': "已载入存档: {name} ({sz:,} 字节，部署时将校准为标准 256KB)",
+        'lp_dsv_recognized': "识别结果: DraStic DSV《爱相随》（初代）存档 ({sz:,} 字节，将自动截取标准 64KB)",
+        'lpp_dsv_recognized': "识别结果: DraStic DSV《爱相随+》存档 ({sz:,} 字节，将自动截取标准 256KB)",
+        'lp_std_recognized': "识别结果: 标准《爱相随》（初代）存档 (64KB / 0x10000 字节，完美就绪)",
+        'lpp_std_recognized': "识别结果: 标准《爱相随+》存档 (256KB / 0x40000 字节，完美就绪)",
+        'other_recognized': "已载入存档: {name} ({sz:,} 字节，将自动识别并校准)",
         'parse_err': "无法解析文件: {err}",
         'err_title': "错误",
         'select_save_err': "请先选择有效的存档文件！",
@@ -60,20 +56,20 @@ I18N = {
         'deploy_start': "\n================ 开始部署 [{mode}] ================",
         'target_emu_log': "[*] 目标模拟器: {name}",
         'dsv_stripped_log': "[*] 检测到 DraStic 尾部标记，已自动剥离末尾 122 字节。",
-        'save_256_log': "[*] 截取标准 256KB (0x40000)《LovePlus+》存档数据。",
-        'save_pad_log': "[*] 存档不足 256KB，已自动填充至 256KB 标准大小。",
+        'save_lp_log': "[*] 识别为 NDS《爱相随》（初代）存档，校准为标准 64KB (0x10000)。",
+        'save_lpp_log': "[*] 识别为 NDS《爱相随+》存档，校准为标准 256KB (0x40000)。",
         'save_written_log': "[✓] 存档已写入: {path} ({sz:,} 字节)",
-        'ips_written_log': "[✓] IPS 补丁已写入: {path}",
+        'ips_written_log': "[✓] 通用免卡带补丁 (code.ips) 已写入: {path}",
         'bin_written_log': "[✓] 完整 code.bin 补丁已写入: {path}",
         'deploy_success_header': "\n================ 部署成功！ ================",
         'deploy_steps': (
             "【接下来只需 3 步】：\n"
             "1. 打开模拟器，运行《NEWラブプラス＋セーブデータ引継ぎツール》（引继工具）。\n"
-            "2. 屏幕将显示：『ラブプラス＋』のDSゲームカードを確認しました。\n"
+            "2. 屏幕将显示识别到游戏卡带（『ラブプラス』或『ラブプラス＋』）。\n"
             "   点击【はい】确认复制数据，等待提示引继成功。\n"
             "3. 打开《NEW LovePlus+》（新爱相随+）本体，在标题菜单点击「继承《爱相随》《爱相随+》的存档」（『ラブプラス』『ラブプラス＋』のデータを引き継ぐ），等待进度条跑完，女友数据即完美继承！"
         ),
-        'deploy_msg': "《LovePlus+》存档与补丁已成功注入模拟器！\n\n1. 运行《引继工具》，点击【はい】完成数据复制。\n2. 打开《NEW LovePlus+》本体，在标题菜单点击「继承《爱相随》《爱相随+》的存档」并等待进度条跑完即可！",
+        'deploy_msg': "存档与自适应通用补丁已成功注入模拟器！\n\n1. 运行《引继工具》，点击【はい】完成数据复制。\n2. 打开《NEW LovePlus+》本体，在标题菜单点击「继承《爱相随》《爱相随+》的存档」并等待进度条跑完即可！",
         'deploy_msg_title': "部署完成",
         'sd_success_header': "\n================ 实机配置完成！ ================",
         'sd_steps': (
@@ -85,7 +81,7 @@ I18N = {
         'sd_msg': "SD 卡补丁与存档已就绪！\n\n插回 3DS 运行引继工具完成复制后，在《NEW LovePlus+》本体标题菜单点击「继承《爱相随》《爱相随+》的存档」并等待进度条跑完即可。",
         'sd_msg_title': "实机配置完成",
         'zip_created_log': "[✓] 独立分享包已生成: {path}",
-        'zip_desc_log': "压缩包内已包含纯净 256KB 存档、免卡带补丁及全平台使用教程，可直接分享给好友！",
+        'zip_desc_log': "压缩包内已包含纯净校准存档、自适应免卡带补丁及全平台使用教程，可直接分享给好友！",
         'zip_msg': "整合压缩包已生成至:\n{path}\n\n可直接分享给其他玩家！",
         'zip_msg_title': "打包成功",
         'save_zip_title': "选择保存位置",
@@ -94,13 +90,13 @@ I18N = {
         'op_fail_msg': "部署过程中发生错误:\n{err}",
     },
     'en': {
-        'app_title': "NEW LovePlus+ Save Transfer Tool v1.1",
+        'app_title': "NEW LovePlus+ Save Transfer Tool v1.2",
         'header_title': "NEW LovePlus+ Save Transfer Tool",
-        'header_sub': "Dedicated tool for NDS LovePlus+, supporting DraStic (.dsv) & standard (.sav) saves",
+        'header_sub': "Supports NDS 'LovePlus' (1st Gen) & 'LovePlus+', supporting DraStic (.dsv) & standard (.sav)",
         'lang_label': "🌐 Language / 语言:",
         'step1_title': " Step 1: Select NDS Save File (.dsv / .sav) ",
         'browse': "Browse...",
-        'tip_default': "Note: You can directly select lpp.dsv from DraStic. The tool automatically removes the 122-byte footer and calibrates to standard 256KB.",
+        'tip_default': "Note: Supports 'LovePlus' (64KB) or 'LovePlus+' (256KB) saves. The tool auto-detects version & calibrates.",
         'step2_title': " Step 2: Select Deployment Target ",
         'mode_emu': "Local 3DS Emulator (Auto-detect & Inject)",
         'mode_sd': "Real 3DS SD Card (Auto-create Luma patch directory & sdmc save)",
@@ -114,11 +110,13 @@ I18N = {
         'welcome_1': "Welcome to NEW LovePlus+ Save Transfer Tool! (by wh76-tech & Google Antigravity)",
         'welcome_2': "Please select your DraStic (.dsv) or NDS (.sav) save, then click [Deploy / Export Now].",
         'footer': "Crafted with ❤️ by wh76-tech & Google Antigravity | MIT License",
-        'sel_file_title': "Select LovePlus+ Save File",
+        'sel_file_title': "Select LovePlus / LovePlus+ Save File",
         'all_files': "All Files",
-        'dsv_recognized': "Recognized: DraStic DSV Save ({sz:,} bytes, 122-byte DeSmuME footer will be stripped on deploy)",
-        'std_recognized': "Recognized: Standard LovePlus+ Save (256KB / 0x40000 bytes, ready to use)",
-        'other_recognized': "Loaded Save: {name} ({sz:,} bytes, will be calibrated to 256KB)",
+        'lp_dsv_recognized': "Recognized: DraStic DSV 'LovePlus' (1st Gen) save ({sz:,} bytes, calibrated to 64KB)",
+        'lpp_dsv_recognized': "Recognized: DraStic DSV 'LovePlus+' save ({sz:,} bytes, calibrated to 256KB)",
+        'lp_std_recognized': "Recognized: Standard 'LovePlus' (1st Gen) save (64KB / 0x10000 bytes, ready to use)",
+        'lpp_std_recognized': "Recognized: Standard 'LovePlus+' save (256KB / 0x40000 bytes, ready to use)",
+        'other_recognized': "Loaded Save: {name} ({sz:,} bytes, will auto-calibrate)",
         'parse_err': "Cannot parse file: {err}",
         'err_title': "Error",
         'select_save_err': "Please select a valid save file first!",
@@ -127,20 +125,20 @@ I18N = {
         'deploy_start': "\n================ Starting Deployment [{mode}] ================",
         'target_emu_log': "[*] Target Emulator: {name}",
         'dsv_stripped_log': "[*] DraStic footer detected. Automatically stripped trailing 122 bytes.",
-        'save_256_log': "[*] Extracted standard 256KB (0x40000) LovePlus+ save data.",
-        'save_pad_log': "[*] Save size is under 256KB. Padded to standard 256KB size.",
+        'save_lp_log': "[*] Recognized as 'LovePlus' (1st Gen) save, calibrated to 64KB (0x10000).",
+        'save_lpp_log': "[*] Recognized as 'LovePlus+' save, calibrated to 256KB (0x40000).",
         'save_written_log': "[✓] Save written to: {path} ({sz:,} bytes)",
-        'ips_written_log': "[✓] IPS patch written to: {path}",
+        'ips_written_log': "[✓] Universal IPS patch written to: {path}",
         'bin_written_log': "[✓] Patched code.bin written to: {path}",
         'deploy_success_header': "\n================ Deployment Successful! ================",
         'deploy_steps': (
             "[Follow these 3 easy steps]:\n"
             "1. Launch your emulator and open 'NEW LovePlus+ Save Data Transfer Tool'.\n"
-            "2. The screen will display: 『ラブプラス＋』のDSゲームカードを確認しました。\n"
+            "2. The screen will confirm detecting your DS game card (『ラブプラス』or『ラブプラス＋』).\n"
             "   Click [はい] (Yes) to confirm copying data.\n"
             "3. Launch 'NEW LovePlus+' game, select 'Inherit save from LovePlus / LovePlus+' (『ラブプラス』『ラブプラス＋』のデータを引き継ぐ) on the title menu, and wait for the progress bar to finish. Your girlfriend data is now seamlessly carried over!"
         ),
-        'deploy_msg': "LovePlus+ save and bypass patch successfully injected into the emulator!\n\n1. Run the Transfer Tool and tap [はい] to copy data.\n2. Open 'NEW LovePlus+', select 'Inherit save from LovePlus / LovePlus+' on the title menu, and wait for the progress bar to finish!",
+        'deploy_msg': "Save and universal bypass patch successfully injected into the emulator!\n\n1. Run the Transfer Tool and tap [はい] to copy data.\n2. Open 'NEW LovePlus+', select 'Inherit save from LovePlus / LovePlus+' on the title menu, and wait for the progress bar to finish!",
         'deploy_msg_title': "Deployment Complete",
         'sd_success_header': "\n================ SD Card Setup Complete! ================",
         'sd_steps': (
@@ -152,7 +150,7 @@ I18N = {
         'sd_msg': "SD card patch and save are ready!\n\nInsert back into 3DS, run Transfer Tool to copy, then select 'Inherit save from LovePlus / LovePlus+' on the main game title menu and wait for the progress bar to finish.",
         'sd_msg_title': "Setup Complete",
         'zip_created_log': "[✓] Standalone share pack generated: {path}",
-        'zip_desc_log': "Zip archive contains calibrated 256KB save, Slot-1 bypass patch, and multi-platform tutorials!",
+        'zip_desc_log': "Zip archive contains calibrated save, universal Slot-1 bypass patch, and multi-platform tutorials!",
         'zip_msg': "All-in-one pack generated at:\n{path}\n\nYou can directly share this with other players!",
         'zip_msg_title': "Export Successful",
         'save_zip_title': "Select Zip Destination",
@@ -431,13 +429,22 @@ class App(tk.Tk):
             is_dsv = False
             if len(raw_bytes) > 122 and b'|-DESMUME SAVE-|' in raw_bytes[-122:]:
                 is_dsv = True
+                content_len = len(raw_bytes) - 122
+            else:
+                content_len = len(raw_bytes)
 
             if is_dsv:
-                info = self.t('dsv_recognized', sz=sz)
-            elif sz == 262144:
-                info = self.t('std_recognized')
+                if content_len <= 65536:
+                    info = self.t('lp_dsv_recognized', sz=sz)
+                else:
+                    info = self.t('lpp_dsv_recognized', sz=sz)
             else:
-                info = self.t('other_recognized', name=os.path.basename(path), sz=sz)
+                if content_len == 65536:
+                    info = self.t('lp_std_recognized')
+                elif content_len == 262144:
+                    info = self.t('lpp_std_recognized')
+                else:
+                    info = self.t('other_recognized', name=os.path.basename(path), sz=sz)
             self.lbl_save_info.config(text=info, foreground="#007700")
         except Exception as e:
             self.lbl_save_info.config(text=self.t('parse_err', err=e), foreground="#cc0000")
@@ -466,14 +473,17 @@ class App(tk.Tk):
             data = data[:-122]
             self.log(self.t('dsv_stripped_log'))
 
-        # Standard LovePlus+ EEPROM is 256KB (262,144 bytes)
-        if len(data) >= 262144:
-            clean_data = data[:262144]
-            self.log(self.t('save_256_log'))
+        # Determine version: LovePlus 1 (64KB / 0x10000) or LovePlus+ (256KB / 0x40000)
+        if len(data) <= 65536:
+            clean_data = data[:65536].ljust(65536, b'\xff')
+            game_type = 'lp'
+            self.log(self.t('save_lp_log'))
         else:
-            clean_data = data.ljust(262144, b'\xff')
-            self.log(self.t('save_pad_log'))
-        return clean_data
+            clean_data = data[:262144].ljust(262144, b'\xff')
+            game_type = 'lpp'
+            self.log(self.t('save_lpp_log'))
+
+        return clean_data, game_type
 
     def execute_deploy(self):
         src = self.save_file_path.get().strip()
@@ -485,7 +495,7 @@ class App(tk.Tk):
         self.log(self.t('deploy_start', mode=mode))
 
         try:
-            save_bytes = self.process_save_data(src)
+            save_bytes, game_type = self.process_save_data(src)
             patched_code_bin = get_patched_code_bin()
 
             if mode == 'emulator':
@@ -496,13 +506,24 @@ class App(tk.Tk):
                 emu_name, emu_dir = self.detected_emus[idx]
                 self.log(self.t('target_emu_log', name=emu_name))
 
-                # 1. Write sdmc/lpp.sav
+                # 1. Write save to sdmc/
                 sdmc_dir = os.path.join(emu_dir, 'sdmc')
                 os.makedirs(sdmc_dir, exist_ok=True)
-                target_sav = os.path.join(sdmc_dir, 'lpp.sav')
-                with open(target_sav, 'wb') as f:
-                    f.write(save_bytes)
-                self.log(self.t('save_written_log', path=target_sav, sz=len(save_bytes)))
+                
+                if game_type == 'lp':
+                    target_sav_lp = os.path.join(sdmc_dir, 'lp.sav')
+                    target_sav_lpp = os.path.join(sdmc_dir, 'lpp.sav')
+                    with open(target_sav_lp, 'wb') as f:
+                        f.write(save_bytes)
+                    with open(target_sav_lpp, 'wb') as f:
+                        f.write(save_bytes)
+                    self.log(self.t('save_written_log', path=target_sav_lp, sz=len(save_bytes)))
+                    self.log(self.t('save_written_log', path=target_sav_lpp, sz=len(save_bytes)))
+                else:
+                    target_sav_lpp = os.path.join(sdmc_dir, 'lpp.sav')
+                    with open(target_sav_lpp, 'wb') as f:
+                        f.write(save_bytes)
+                    self.log(self.t('save_written_log', path=target_sav_lpp, sz=len(save_bytes)))
 
                 # 2. Write mods (write to both mod root and exefs subfolder for 100% fail-safe compatibility)
                 mod_title_dir = os.path.join(emu_dir, 'load', 'mods', TITLE_ID)
@@ -537,11 +558,21 @@ class App(tk.Tk):
                     messagebox.showerror(self.t('err_title'), self.t('select_sd_err'))
                     return
 
-                # Write SD:/lpp.sav
-                target_sav = os.path.join(sd_root, 'lpp.sav')
-                with open(target_sav, 'wb') as f:
-                    f.write(save_bytes)
-                self.log(self.t('save_written_log', path=target_sav, sz=len(save_bytes)))
+                # Write SD save
+                if game_type == 'lp':
+                    target_sav_lp = os.path.join(sd_root, 'lp.sav')
+                    target_sav_lpp = os.path.join(sd_root, 'lpp.sav')
+                    with open(target_sav_lp, 'wb') as f:
+                        f.write(save_bytes)
+                    with open(target_sav_lpp, 'wb') as f:
+                        f.write(save_bytes)
+                    self.log(self.t('save_written_log', path=target_sav_lp, sz=len(save_bytes)))
+                    self.log(self.t('save_written_log', path=target_sav_lpp, sz=len(save_bytes)))
+                else:
+                    target_sav_lpp = os.path.join(sd_root, 'lpp.sav')
+                    with open(target_sav_lpp, 'wb') as f:
+                        f.write(save_bytes)
+                    self.log(self.t('save_written_log', path=target_sav_lpp, sz=len(save_bytes)))
 
                 # Write Luma3DS LayeredFS patch: SD:/luma/titles/0004000000120D00/code.ips
                 luma_mod_dir = os.path.join(sd_root, 'luma', 'titles', TITLE_ID)
@@ -563,27 +594,32 @@ class App(tk.Tk):
 
                 readme_content = (
                     "========================================================================\n"
-                    "NEW LovePlus+ Save Transfer Pack (NEWラブプラス＋ 存档引继补丁包)\n"
+                    "NEW LovePlus+ Save Transfer Pack v1.2 (NEWラブプラス＋ 存档引继补丁包)\n"
                     "========================================================================\n\n"
+                    "Supports both NDS 'LovePlus' (64KB) and 'LovePlus+' (256KB)!\n\n"
                     "[1. PC Emulators (Azahar / Citra / Lime3DS)]:\n"
-                    "1. Copy 'lpp.sav' to your emulator's 'sdmc/' directory (as sdmc/lpp.sav).\n"
+                    "1. Copy your save to your emulator's 'sdmc/' directory (as sdmc/lpp.sav or sdmc/lp.sav).\n"
                     "2. Copy 'code.ips' to 'load/mods/0004000000120D00/code.ips' (no exefs folder required, exefs/ is also supported).\n"
                     "3. Open the emulator and launch 'NEW LovePlus+ Save Data Transfer Tool'.\n"
                     "4. Tap [はい] (Yes) to confirm transfer.\n"
                     "5. Launch 'NEW LovePlus+' game, select 'Inherit save from LovePlus / LovePlus+' (『ラブプラス』『ラブプラス＋』のデータを引き継ぐ) on the title menu, and wait for the progress bar to finish!\n\n"
                     "[2. Real 3DS (Luma3DS)]:\n"
-                    "1. Place 'lpp.sav' at the root of your SD card (SD:/lpp.sav).\n"
+                    "1. Place your save at the root of your SD card (SD:/lpp.sav or SD:/lp.sav).\n"
                     "2. Place 'code.ips' at 'SD:/luma/titles/0004000000120D00/code.ips'.\n"
                     "3. Launch the Transfer Tool on 3DS to copy data.\n"
                     "4. Launch 'NEW LovePlus+' game, select 'Inherit save from LovePlus / LovePlus+' on the title menu, and wait for the progress bar to finish!\n\n"
                     "[3. Android Mobile Citra / Lime3DS]:\n"
-                    "1. Place save at: /citra-emu/sdmc/lpp.sav\n"
+                    "1. Place save at: /citra-emu/sdmc/lpp.sav (or /citra-emu/sdmc/lp.sav)\n"
                     "2. Place patch at: /citra-emu/load/mods/0004000000120D00/code.ips\n"
                     "3. Run Transfer Tool -> then in 'NEW LovePlus+' select 'Inherit save' on title menu and wait for progress bar.\n"
                 )
 
                 with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zf:
-                    zf.writestr('lpp.sav', save_bytes)
+                    if game_type == 'lp':
+                        zf.writestr('lp.sav', save_bytes)
+                        zf.writestr('lpp.sav', save_bytes)
+                    else:
+                        zf.writestr('lpp.sav', save_bytes)
                     zf.writestr('code.ips', EMBEDDED_CODE_IPS)
                     if patched_code_bin:
                         zf.writestr('code.bin', patched_code_bin)

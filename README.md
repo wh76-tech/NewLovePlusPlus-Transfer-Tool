@@ -8,7 +8,7 @@
 
 A dedicated NDS save transfer tool and LayeredFS code patch for **Nintendo 3DS《NEW LovePlus+》（NEWラブプラス＋, Title ID: `00040000000F4E00`）**.
 
-Seamlessly transfer your *LovePlus+* (Title ID: `BOXJ`) save files from **DraStic emulator (`.dsv`)** or **standard NDS flashcarts/emulators (`.sav`)** directly into 3DS emulators (Azahar, Citra, Lime3DS, etc.) or real 3DS hardware—**without requiring a physical Slot-1 NDS cartridge**!
+Seamlessly transfer your *LovePlus* (1st Gen, Title ID: `CXTJ`) and *LovePlus+* (Title ID: `BOXJ`) save files from **DraStic emulator (`.dsv`)** or **standard NDS flashcarts/emulators (`.sav`)** directly into 3DS emulators (Azahar, Citra, Lime3DS, etc.) or real 3DS hardware—**without requiring a physical Slot-1 NDS cartridge**!
 
 ---
 
@@ -22,16 +22,16 @@ Because 3DS emulators (Azahar, Citra, Lime3DS, Mandarine, etc.) do not emulate t
 > *(Could not detect LovePlus DS game card. Please insert LovePlus or LovePlus+ card.)*
 
 ### 2. Reverse Engineering & Code Cave Hot Patch
-By disassembling and reverse-engineering the ARM11 executable (`exefs/code.bin`) of the official transfer tool, we designed a lightweight 333-byte LayeredFS IPS patch (`code.ips`):
+By disassembling and reverse-engineering the ARM11 executable (`exefs/code.bin`) of the official transfer tool, we designed a lightweight 477-byte LayeredFS IPS patch (`code.ips`):
 
 1. **Card Insertion Patch (`0x002d315c`)**:
    Forces `CardSlotIsInserted` to unconditionally return `1`.
-2. **Card Type Detection Patch (`0x0036d0e8`)**:
-   Hooks the async card detection thread callback to populate the detector struct as *LovePlus+* (`GameType: 4`, Title ID: `BOXJ`, Save Size: `0x40000` = 256KB).
+2. **Dynamic Card Type Detection Patch (`0x0036d0e8`)**:
+   Dynamically populates the detector struct based on the save file loaded (`GameType: 2` for *LovePlus* / 64KB, or `GameType: 4` for *LovePlus+* / 256KB).
 3. **State Machine Bypass Patch (`0x0036ed54`)**:
    Bypasses the physical hardware poll loop in Title Substate 1, jumping directly to Substate 4 (data preparation).
-4. **SDMC Code Cave Loader (`0x0037022c` -> `0x003d61b0`)**:
-   Hooks `ReadSaveDataFromCard` (which originally called the SPI driver `0x002fcf44`) to jump into our custom code cave. The cave uses the 3DS filesystem service (`FSUSER_OpenFileDirectly`) to open `sdmc:/lpp.sav` from the virtual SD card, and calls `FSFILE_Read` to load the 256KB save directly into the game's allocated memory buffer (`[r4, #0x78]`).
+4. **Universal SDMC Code Cave Loader (`0x0037022c` -> `0x003d61b0`)**:
+   Hooks `ReadSaveDataFromCard` (which originally called the SPI driver `0x002fcf44`) to jump into our custom code cave. The cave attempts to open `sdmc:/lpp.sav` or `sdmc:/lp.sav`, queries the file size via `FSFILE_GetSize`, automatically detects whether it is *LovePlus* (64KB) or *LovePlus+* (256KB), and loads the save into the memory buffer (`[r4, #0x78]`).
 
 **Why this is the best solution**:
 The official Konami transfer tool executes its native girlfriend data LZ77 decompression, boyfriend statistics calculation, and ExtData checksum generation inside the 3DS environment. The generated 3DS ExtData (`00000F4E`) is **100% native, legitimate, and will never corrupt or trigger integrity checks**.
@@ -42,12 +42,13 @@ The official Konami transfer tool executes its native girlfriend data LZ77 decom
 
 - 🌐 **Full Bilingual Support (English & Chinese)**: Real-time one-click language switching in the top-right corner.
 - 🖥️ **Standalone GUI Desktop Application**: No Python installation required—run `NEW_LovePlus+_Transfer_Tool.exe` directly on Windows.
-- 🔍 **Smart Format Detection & Calibration**:
+- 🔍 **Universal Smart Format Detection & Calibration**:
+  - Automatically recognizes both **《LovePlus》**(1st Gen, 64KB) and **《LovePlus+》**(256KB).
   - Automatically identifies DraStic `.dsv` files and strips the 122-byte DeSmuME footer.
-  - Calibrates any flashcart save to the standard 256KB (`0x40000`) EEPROM format.
+  - Calibrates any flashcart save to the standard 64KB (`0x10000`) or 256KB (`0x40000`) EEPROM format.
 - 🚀 **One-Click Emulator Auto-Injection**:
   - Automatically locates **Azahar**, **Citra**, **Lime3DS**, and **Mandarine** user data directories.
-  - Automatically deploys the LayeredFS patch (`load/mods/0004000000120D00/code.ips`) and SDMC save file (`sdmc/lpp.sav`).
+  - Automatically deploys the LayeredFS patch (`load/mods/0004000000120D00/code.ips`) and SDMC save file (`sdmc/lpp.sav` & `sdmc/lp.sav`).
 - 🎮 **Real 3DS & Multi-Platform Support**:
   - Automatically formats and writes Luma3DS LayeredFS patches to real 3DS SD cards.
   - Exports an all-in-one portable `.zip` package for Android Citra / Lime3DS users.
@@ -59,14 +60,14 @@ The official Konami transfer tool executes its native girlfriend data LZ77 decom
 ### Method 1: Using the GUI Desktop Tool (Recommended)
 
 1. Download and run [`NEW_LovePlus+_Transfer_Tool.exe`](NEW_LovePlus+_Transfer_Tool.exe).
-2. **Step 1**: Click **Browse...** to select your *LovePlus+* save file (supports DraStic `lpp.dsv` or any `.sav`).
+2. **Step 1**: Click **Browse...** to select your *LovePlus* or *LovePlus+* save file (supports DraStic `.dsv` or any `.sav`).
 3. **Step 2**: Choose your deployment target (automatically detects your installed Azahar / Citra emulator).
 4. Click **【🚀 Deploy / Export Now】**.
-   > 💡 **What happens automatically**: The tool injects the `code.ips` patch directly into the emulator's mod directory (`load/mods/0004000000120D00/code.ips`) and writes your calibrated save to `sdmc/lpp.sav`. No manual file copying or folder creation needed!
+   > 💡 **What happens automatically**: The tool injects the universal `code.ips` patch directly into the emulator's mod directory (`load/mods/0004000000120D00/code.ips`) and writes your calibrated save to `sdmc/`. No manual file copying or folder creation needed!
 5. Launch your 3DS emulator and open **《NEWラブプラス＋セーブデータ引継ぎツール》** (*Transfer Tool*).
-6. The on-screen prompt will confirm:
-   > **『ラブプラス＋』のDSゲームカードを確認しました。引継ぎを行いますか？**  
-   > *(LovePlus+ DS game card confirmed. Proceed with transfer?)*
+6. The on-screen prompt will confirm detecting your game:
+   > **『ラブプラス』** (or **『ラブプラス＋』**) **のDSゲームカードを確認しました。引継ぎを行いますか？**  
+   > *(LovePlus / LovePlus+ DS game card confirmed. Proceed with transfer?)*
 7. Tap **【はい】** (Yes) on the touchscreen to copy data.
 8. Once transfer is complete, launch **《NEWラブプラス＋》** (*NEW LovePlus+*), select **『ラブプラス』『ラブプラス＋』のデータを引き継ぐ** (*Inherit save data from "LovePlus" / "LovePlus+"*) on the title menu, and wait for the progress bar to finish—your girlfriend's data, affection, anniversary dates, and memories are seamlessly carried over!
 
