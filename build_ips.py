@@ -15,58 +15,78 @@ cave_asm = """
 
     @ Setup FS open parameters on stack
     mov r0, #1
-    str r0, [sp]
+    str r0, [sp]               @ [sp, #0] = 1 (archive path type: PATH_EMPTY)
     mov r0, #0
-    str r0, [sp, #4]
-    str r0, [sp, #8]
+    str r0, [sp, #4]           @ [sp, #4] = 0 (archive path size: 0)
+    str r0, [sp, #8]           @ [sp, #8] = 0 (archive path data: NULL)
     mov r0, #3
-    str r0, [sp, #0xc]
-    mov r0, #9
-    str r0, [sp, #0x14]
+    str r0, [sp, #0xc]         @ [sp, #0xc] = 3 (file path type: PATH_ASCII)
     mov r0, #1
-    str r0, [sp, #0x18]
+    str r0, [sp, #0x18]        @ [sp, #0x18] = 1 (open flags: FS_OPEN_READ)
     mov r0, #0
-    str r0, [sp, #0x1c]
+    str r0, [sp, #0x1c]        @ [sp, #0x1c] = 0 (attributes: 0)
 
-    @ Try open /lpp.sav first
+    @ 1. Try open /lpp.sav (size 9)
     adr r0, path_lpp
     str r0, [sp, #0x10]
+    mov r0, #9
+    str r0, [sp, #0x14]
     ldr r0, fs_hnd_ptr
     add r1, sp, #0x20
     mov r2, #0
     mov r3, #9
     bl 0x002b9484              @ FSUSER_OpenFileDirectly(/lpp.sav)
-
     cmp r0, #0
     beq file_opened
 
-    @ If /lpp.sav failed, try /lp.sav
+    @ 2. Try open /lp.sav (size 8)
     adr r0, path_lp
     str r0, [sp, #0x10]
+    mov r0, #8
+    str r0, [sp, #0x14]
     ldr r0, fs_hnd_ptr
     add r1, sp, #0x20
     mov r2, #0
     mov r3, #9
     bl 0x002b9484              @ FSUSER_OpenFileDirectly(/lp.sav)
+    cmp r0, #0
+    beq file_opened
 
+    @ 3. Try open /lpp.dsv (size 9)
+    adr r0, path_lpp_dsv
+    str r0, [sp, #0x10]
+    mov r0, #9
+    str r0, [sp, #0x14]
+    ldr r0, fs_hnd_ptr
+    add r1, sp, #0x20
+    mov r2, #0
+    mov r3, #9
+    bl 0x002b9484              @ FSUSER_OpenFileDirectly(/lpp.dsv)
+    cmp r0, #0
+    beq file_opened
+
+    @ 4. Try open /lp.dsv (size 8)
+    adr r0, path_lp_dsv
+    str r0, [sp, #0x10]
+    mov r0, #8
+    str r0, [sp, #0x14]
+    ldr r0, fs_hnd_ptr
+    add r1, sp, #0x20
+    mov r2, #0
+    mov r3, #9
+    bl 0x002b9484              @ FSUSER_OpenFileDirectly(/lp.dsv)
     cmp r0, #0
     bne cleanup_exit
 
 file_opened:
-    @ Get File Size: FSFILE_GetSize
-    mrc p15, 0, r0, c13, c0, 3  @ get TLS
-    add r0, r0, #0x80           @ cmdbuf
-    mov r1, #0x08000000
-    orr r1, r1, #0x00010000     @ 0x08010000
-    str r1, [r0]
-    ldr r0, [sp, #0x20]         @ file handle
-    svc 0x32                    @ SendSyncRequest
-    mrc p15, 0, r0, c13, c0, 3
-    add r0, r0, #0x80
-    ldr r2, [r0, #8]            @ file size (low 32 bits)
+    @ Get File Size: FSFILE_GetSize(&fileHandle, &fileSize64)
+    add r0, sp, #0x20           @ &fileHandle
+    add r1, sp, #0x28           @ &fileSize64
+    bl 0x002d8418               @ FSFILE_GetSize
+    ldr r2, [sp, #0x28]         @ file size (low 32 bits)
 
-    @ Check if size <= 0x10000 (64KB -> LovePlus 1)
-    mov r1, #0x10000
+    @ Check if size <= 0x10200 (64KB -> LovePlus 1, with or without DraStic footer)
+    ldr r1, size_threshold      @ 0x10200
     cmp r2, r1
     ble is_lp
 
@@ -94,6 +114,11 @@ fill_meta:
     adr r0, global_size
     str r6, [r0]
 
+    @ Zero out the 256KB context buffer first: bzero(buffer, 0x40000)
+    ldr r0, [r4, #0x78]
+    mov r1, #0x40000
+    bl 0x002ba098               @ bzero
+
     @ Read file into context buffer: [r4, #0x78]
     ldr r5, [r4, #0x78]
     add r0, sp, #0x20           @ &fileHandle
@@ -120,6 +145,8 @@ cleanup_exit:
     .align 2
 fs_hnd_ptr:
     .word 0x0046a7c0
+size_threshold:
+    .word 0x00010200
 global_type:
     .word 4
 global_size:
@@ -130,13 +157,31 @@ path_lpp:
     .align 2
 path_lp:
     .asciz "/lp.sav"
+    .align 2
+path_lpp_dsv:
+    .asciz "/lpp.dsv"
+    .align 2
+path_lp_dsv:
+    .asciz "/lp.dsv"
 """
 
-patch2_asm = """
+cave_addr = 0x003d61b0
+cave_bytes_raw, _ = ks.asm(cave_asm, cave_addr)
+cave_bytes = bytes(cave_bytes_raw)
+
+# Dynamically calculate global_type and global_size addresses in cave
+thresh_bytes = (0x00010200).to_bytes(4, 'little')
+pos = cave_bytes.find(thresh_bytes)
+assert pos != -1, "Could not find size_threshold in cave_asm"
+global_type_addr = cave_addr + pos + 4
+global_size_addr = cave_addr + pos + 8
+print(f"Calculated dynamic addresses: global_type=0x{global_type_addr:08x}, global_size=0x{global_size_addr:08x}")
+
+patch2_asm = f"""
     cmp r1, #0
-    moveq r0, #1
+    moveq r0, #0
     bxeq lr
-    ldr r0, =0x003d62e8
+    ldr r0, =0x{global_type_addr:08x}
     ldr r2, [r0]
     strb r2, [r1]
     mov r0, #1
@@ -144,10 +189,10 @@ patch2_asm = """
     strb r0, [r1, #0xe]
     mov r0, #0
     str r0, [r1, #0x10]
-    ldr r0, =0x003d62ec
+    ldr r0, =0x{global_size_addr:08x}
     ldr r2, [r0]
     str r2, [r1, #0x14]
-    mov r0, #1
+    mov r0, #0
     bx lr
 """
 
@@ -175,7 +220,7 @@ patches_def = [
         b 0x003d61b0
     ''', "Hook ReadSaveDataFromCard"),
 
-    # Patch 5: Universal SDMC loader cave (supports both LovePlus 1 & LovePlus+)
+    # Patch 5: Universal SDMC loader cave (supports both LovePlus 1 & LovePlus+, .sav & .dsv)
     (0x003d61b0, cave_asm, "Universal SDMC loader cave")
 ]
 
@@ -217,5 +262,6 @@ if os.path.exists('exefs/code.bin'):
     for offset, code, desc in compiled_patches:
         patched_bin[offset : offset + len(code)] = code
     with open('code_patched.bin', 'wb') as f:
-        f.write(patched_bin)
+        patched_bin_out = bytes(patched_bin)
+        f.write(patched_bin_out)
     print('Updated code_patched.bin successfully!')
