@@ -60,16 +60,20 @@ The official Konami transfer tool executes its native girlfriend data LZ77 decom
 ### Method 1: Using the GUI Desktop Tool (Recommended)
 
 1. Download and run [`NEW_LovePlus+_Transfer_Tool.exe`](NEW_LovePlus+_Transfer_Tool.exe).
-2. **Step 1**: Click **Browse...** to select your *LovePlus* or *LovePlus+* save file (supports DraStic `.dsv` or any `.sav`).
-3. **Step 2**: Choose your deployment target (automatically detects your installed Azahar / Citra emulator).
-4. Click **【🚀 Deploy / Export Now】**.
+2. **Step 1 (Select Save)**: Click **Browse...** to select your save file (supports DraStic `.dsv` or any `.sav`).
+3. **Step 2 (Select Game Version)**: Select the game version corresponding to your save:
+   - **《LovePlus+》**: Deploys as `lpp.sav` (256KB).
+   - **《LovePlus》 (1st Gen)**: Deploys as `lp.sav` (64KB).  
+   *(💡 The tool will automatically clean up the other version's save file in the emulator folder to avoid filename conflicts!)*
+4. **Step 3 (Select Target Environment)**: Choose your deployment target (automatically detects installed Azahar / Citra / Lime3DS emulator data directories or real 3DS SD card).
+5. Click **【🚀 Deploy / Export Now】**.
    > 💡 **What happens automatically**: The tool injects the universal `code.ips` patch directly into the emulator's mod directory (`load/mods/0004000000120D00/code.ips`) and writes your calibrated save to `sdmc/`. No manual file copying or folder creation needed!
-5. Launch your 3DS emulator and open **《NEWラブプラス＋セーブデータ引継ぎツール》** (*Transfer Tool*).
-6. The on-screen prompt will confirm detecting your game:
+6. Launch your 3DS emulator and open **《NEWラブプラス＋セーブデータ引継ぎツール》** (*Transfer Tool*).
+7. The on-screen prompt will confirm detecting your game:
    > **『ラブプラス』** (or **『ラブプラス＋』**) **のDSゲームカードを確認しました。引継ぎを行いますか？**  
    > *(LovePlus / LovePlus+ DS game card confirmed. Proceed with transfer?)*
-7. Tap **【はい】** (Yes) on the touchscreen to copy data.
-8. Once transfer is complete, launch **《NEWラブプラス＋》** (*NEW LovePlus+*), select **『ラブプラス』『ラブプラス＋』のデータを引き継ぐ** (*Inherit save data from "LovePlus" / "LovePlus+"*) on the title menu, and wait for the progress bar to finish—your girlfriend's data, affection, anniversary dates, and memories are seamlessly carried over!
+8. Tap **【はい】** (Yes) on the touchscreen to copy data.
+9. Once transfer is complete, launch **《NEWラブプラス＋》** (*NEW LovePlus+*), select **『ラブプラス』『ラブプラス＋』のデータを引き継ぐ** (*Inherit save data from "LovePlus" / "LovePlus+"*) on the title menu, and wait for the progress bar to finish—your girlfriend's data, affection, anniversary dates, and memories are seamlessly carried over!
 
 ---
 
@@ -78,7 +82,10 @@ The official Konami transfer tool executes its native girlfriend data LZ77 decom
 If you prefer placing files manually:
 
 #### 1. PC Emulators (Azahar / Citra / Lime3DS)
-- **Save file**: Rename your 256KB save to `lpp.sav` and place it in `<Emulator_Data_Dir>/sdmc/lpp.sav`.
+- **Save file**:
+  - For **LovePlus (1st Gen)**: Rename your 64KB save to `lp.sav` and place it in `<Emulator_Data_Dir>/sdmc/lp.sav`.
+  - For **LovePlus+**: Rename your 256KB save to `lpp.sav` and place it in `<Emulator_Data_Dir>/sdmc/lpp.sav`.  
+  *(Note: The universal patch also directly supports `.dsv` extensions, e.g., `sdmc/lp.dsv` or `sdmc/lpp.dsv`)*
 - **Patch file**: Copy `code.ips` directly into the Title ID mod folder (no `exefs` subfolder required, matching Luma3DS standard; placing inside `exefs/` is also supported):
   ```text
   <Emulator_Data_Dir>/load/mods/0004000000120D00/code.ips
@@ -86,7 +93,7 @@ If you prefer placing files manually:
   *(or `<Emulator_Data_Dir>/load/mods/0004000000120D00/exefs/code.ips`)*
 
 #### 2. Real 3DS Hardware (Luma3DS Custom Firmware)
-- **Save file**: Place the 256KB save at the **root of your 3DS SD card** as `SD:/lpp.sav`.
+- **Save file**: Place the save at the **root of your 3DS SD card** as `SD:/lp.sav` (for LP1 64KB) or `SD:/lpp.sav` (for LP+ 256KB).
 - **Patch file**: Copy `code.ips` directly to:
   ```text
   SD:/luma/titles/0004000000120D00/code.ips
@@ -94,7 +101,7 @@ If you prefer placing files manually:
 - Hold `Select` while powering on your 3DS and ensure **"Enable game patching"** is enabled in Luma3DS configuration.
 
 #### 3. Android Emulators (Citra / Lime3DS Mobile)
-- **Save path**: `/citra-emu/sdmc/lpp.sav`
+- **Save path**: `/citra-emu/sdmc/lp.sav` or `/citra-emu/sdmc/lpp.sav`
 - **Patch path**: `/citra-emu/load/mods/0004000000120D00/code.ips` (or `/citra-emu/load/mods/0004000000120D00/exefs/code.ips`)
 
 ---
